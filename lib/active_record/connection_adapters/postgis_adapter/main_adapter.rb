@@ -89,14 +89,13 @@ module ActiveRecord  # :nodoc:
               desc_order_columns = inddef.scan(/(\w+) DESC/).flatten
               orders = desc_order_columns.any? ? Hash[desc_order_columns.map {|order_column| [order_column, :desc]}] : {}
               where = inddef.scan(/WHERE (.+)$/).flatten[0]
-              # using = inddef.scan(/USING (.+?) /).flatten[0].to_sym
+              using = inddef.scan(/USING (.+?) /).flatten[0].to_sym
 
               spatial = inddef =~ /using\s+gist/i &&
                         columns.size == 1 &&
                         %w[geometry geography].include?(columns.values.first[1])
 
-              # IndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, nil, using)
-              ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, !!spatial)
+              ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, using, nil, !!spatial)
             end
           end.compact
         end
